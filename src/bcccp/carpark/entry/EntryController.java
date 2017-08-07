@@ -30,13 +30,31 @@ public class EntryController
 			ICarSensor is,
 			IEntryUI ui) {
 		//TODO Implement constructor
+		this.entryGate = entryGate;
+		this.outsideSensor = os;
+		this.insideSensor = is;
+		this.ui = ui;
+		this.carpark = carpark;
+		
+		this.ui.registerController(this);
+		this.outsideSensor.registerResponder(this);
+		this.insideSensor.registerResponder(this);
+		
 	}
-
-
 
 	@Override
 	public void buttonPushed() {
-		// TODO Auto-generated method stub
+		if(this.outsideSensor.carIsDetected()==true){
+			//check carpark
+			
+			this.ui.display("Take Ticket");
+			//ticket printed
+			
+			
+			
+		}else{
+			this.ui.display("");
+		}
 		
 	}
 
@@ -52,7 +70,7 @@ public class EntryController
 
 	@Override
 	public void ticketTaken() {
-		// TODO Auto-generated method stub
+		this.entryGate.raise();
 		
 	}
 
@@ -68,10 +86,17 @@ public class EntryController
 
 	@Override
 	public void carEventDetected(String detectorId, boolean detected) {
-		// TODO Auto-generated method stub
+		//System.out.println(detectorId);
+		if(detectorId == "Entry Outside Sensor"){
+			if(detected){
+				this.ui.display("Push button");
+			}else{
+				this.ui.display("");
+			}
+		}
+		if(detectorId == "Entry Inside Sensor"){
+			this.entryGate.lower();
+		}
 		
-	}
-
-	
-	
+	}	
 }
