@@ -27,7 +27,16 @@ public class ExitController
 			ICarSensor is,
 			ICarSensor os, 
 			IExitUI ui) {
-		//TODO Implement constructor
+		
+		this.carpark = carpark;
+		this.exitGate = exitGate;
+		this.outsideSensor = os;
+		this.insideSensor = is;
+		this.ui = ui;
+		
+		this.ui.registerController(this);
+		this.outsideSensor.registerResponder(this);
+		this.insideSensor.registerResponder(this);
 	}
 
 
@@ -35,6 +44,8 @@ public class ExitController
 	@Override
 	public void ticketInserted(String ticketStr) {
 		// TODO Auto-generated method stub
+		
+		//Run Validate Ticket
 		
 	}
 
@@ -44,16 +55,25 @@ public class ExitController
 	public void ticketTaken() {
 		// TODO Auto-generated method stub
 		
+		this.ui.display("");
 	}
 
 
 
 	@Override
 	public void carEventDetected(String detectorId, boolean detected) {
-		// TODO Auto-generated method stub
+		//System.out.println(detectorId);
+		if(detectorId == "Exit Inside Sensor"){
+			if(detected){
+				this.ui.display("Insert Ticket");
+			}else{
+				this.ui.display("");
+			}
+		}
+		if(detectorId == "Exit Outside Sensor"){
+			this.exitGate.lower();
+		}
 		
 	}
 
-	
-	
 }

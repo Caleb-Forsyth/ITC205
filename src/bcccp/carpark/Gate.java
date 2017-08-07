@@ -21,7 +21,7 @@ public class Gate extends JFrame implements IGate {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-		Gate frame = new Gate(100, 100);
+		final Gate frame = new Gate(100, 100);
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
