@@ -46,12 +46,16 @@ public class EntryController
 	public void buttonPushed() {
 		if(this.outsideSensor.carIsDetected()==true){
 			//check carpark
+			if(this.carpark.isFull()){
+				this.ui.display("Carpark Full");
 			
-			this.ui.display("Take Ticket");
-			//ticket printed
-			
-			
-			
+				//display should reset as car backs out from sensor
+			}else{
+				
+				this.ui.display("Take Ticket");
+				//ticket printed
+			}
+				
 		}else{
 			this.ui.display("");
 		}
@@ -94,8 +98,18 @@ public class EntryController
 				this.ui.display("");
 			}
 		}
-		if(detectorId == "Entry Inside Sensor"){
+		
+		if(!this.outsideSensor.carIsDetected() && this.insideSensor.carIsDetected()){
+			//Car has entered the carpark, passed the gate
+			
+			
 			this.entryGate.lower();
+			this.carpark.recordAdhocTicketEntry();
+			
+			
+			
+			
+			
 		}
 		
 	}	

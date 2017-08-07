@@ -16,12 +16,18 @@ public class Carpark implements ICarpark {
 	private IAdhocTicketDAO adhocTicketDAO;
 	private ISeasonTicketDAO seasonTicketDAO;
 	
-	
+	private String name;
 	
 	public Carpark(String name, int capacity, 
 			IAdhocTicketDAO adhocTicketDAO, 
 			ISeasonTicketDAO seasonTicketDAO) {
 		//TODO Implement constructor
+		this.name = name;
+		
+		this.capacity = capacity;
+		this.adhocTicketDAO = adhocTicketDAO;
+		this.seasonTicketDAO = seasonTicketDAO;
+		
 	}
 
 
@@ -29,6 +35,7 @@ public class Carpark implements ICarpark {
 	@Override
 	public void register(ICarparkObserver observer) {
 		// TODO Auto-generated method stub
+		observers.add(observer);
 		
 	}
 
@@ -37,7 +44,7 @@ public class Carpark implements ICarpark {
 	@Override
 	public void deregister(ICarparkObserver observer) {
 		// TODO Auto-generated method stub
-		
+		observers.remove(observer);
 	}
 
 
@@ -45,7 +52,7 @@ public class Carpark implements ICarpark {
 	@Override
 	public String getName() {
 		// TODO Auto-generated method stub
-		return null;
+		return name;
 	}
 
 
@@ -53,7 +60,10 @@ public class Carpark implements ICarpark {
 	@Override
 	public boolean isFull() {
 		// TODO Auto-generated method stub
-		return false;
+		if(this.numberOfCarsParked<this.capacity){
+			return false;			
+		}
+		return true;
 	}
 
 
@@ -61,6 +71,7 @@ public class Carpark implements ICarpark {
 	@Override
 	public IAdhocTicket issueAdhocTicket() {
 		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
@@ -69,6 +80,7 @@ public class Carpark implements ICarpark {
 	@Override
 	public void recordAdhocTicketEntry() {
 		// TODO Auto-generated method stub
+		this.numberOfCarsParked++;
 		
 	}
 
@@ -77,6 +89,7 @@ public class Carpark implements ICarpark {
 	@Override
 	public IAdhocTicket getAdhocTicket(String barcode) {
 		// TODO Auto-generated method stub
+		
 		return null;
 	}
 
@@ -93,6 +106,8 @@ public class Carpark implements ICarpark {
 	@Override
 	public void recordAdhocTicketExit() {
 		// TODO Auto-generated method stub
+		
+		this.numberOfCarsParked--;
 		
 	}
 
