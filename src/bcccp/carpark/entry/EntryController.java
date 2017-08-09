@@ -56,11 +56,6 @@ public class EntryController
 				//ticket printed
 			}
 				
-			
-			
-			
-			
-			
 		}else{
 			this.ui.display("");
 		}
