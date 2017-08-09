@@ -35,7 +35,10 @@ public class Carpark implements ICarpark {
 	@Override
 	public void register(ICarparkObserver observer) {
 		// TODO Auto-generated method stub
-		observers.add(observer);
+		if(!observers.contains(observer)){
+			observers.add(observer);
+		}
+		
 		
 	}
 
@@ -44,7 +47,10 @@ public class Carpark implements ICarpark {
 	@Override
 	public void deregister(ICarparkObserver observer) {
 		// TODO Auto-generated method stub
-		observers.remove(observer);
+		if(observers.contains(observer)){
+			observers.remove(observer);
+		}
+		
 	}
 
 
@@ -52,7 +58,7 @@ public class Carpark implements ICarpark {
 	@Override
 	public String getName() {
 		// TODO Auto-generated method stub
-		return name;
+		return this.name;
 	}
 
 
@@ -72,7 +78,7 @@ public class Carpark implements ICarpark {
 	public IAdhocTicket issueAdhocTicket() {
 		// TODO Auto-generated method stub
 		
-		return null;
+		return this.adhocTicketDAO.createTicket(this.carparkId);
 	}
 
 
@@ -89,8 +95,7 @@ public class Carpark implements ICarpark {
 	@Override
 	public IAdhocTicket getAdhocTicket(String barcode) {
 		// TODO Auto-generated method stub
-		
-		return null;
+		return this.adhocTicketDAO.findTicketByBarcode(barcode);
 	}
 
 
@@ -116,7 +121,7 @@ public class Carpark implements ICarpark {
 	@Override
 	public void registerSeasonTicket(ISeasonTicket seasonTicket) {
 		// TODO Auto-generated method stub
-		
+		this.seasonTicketDAO.registerTicket(seasonTicket);
 	}
 
 
@@ -124,6 +129,7 @@ public class Carpark implements ICarpark {
 	@Override
 	public void deregisterSeasonTicket(ISeasonTicket seasonTicket) {
 		// TODO Auto-generated method stub
+		this.seasonTicketDAO.deregisterTicket(seasonTicket);
 		
 	}
 
@@ -148,7 +154,7 @@ public class Carpark implements ICarpark {
 	@Override
 	public void recordSeasonTicketEntry(String ticketId) {
 		// TODO Auto-generated method stub
-		
+		this.seasonTicketDAO.recordTicketEntry(ticketId);
 	}
 
 
@@ -156,6 +162,7 @@ public class Carpark implements ICarpark {
 	@Override
 	public void recordSeasonTicketExit(String ticketId) {
 		// TODO Auto-generated method stub
+		this.seasonTicketDAO.recordTicketExit(ticketId);
 		
 	}
 
