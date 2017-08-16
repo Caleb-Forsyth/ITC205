@@ -24,7 +24,7 @@ public class EntryController
 	private long entryTime;
 	private String seasonTicketId = null;
 	
-	private boolean canLowerGate;
+	//private boolean canLowerGate;
 	
 	
 
@@ -83,7 +83,7 @@ public class EntryController
 	@Override
 	public void ticketTaken() {
 		this.entryGate.raise();
-		this.canLowerGate = false;
+		//this.canLowerGate = false;
 		
 	}
 
@@ -114,15 +114,10 @@ public class EntryController
 			
 			if(!this.outsideSensor.carIsDetected() && this.insideSensor.carIsDetected()){
 				//Car is passing gate
-				
-				this.canLowerGate = true;
-				
-			}else if(!this.insideSensor.carIsDetected() && this.canLowerGate){
-				//Car has completely passed gate
-				//No check for outside sensor since new car can arrive behind
-				
 				this.entryGate.lower();
 				this.carpark.recordAdhocTicketEntry();
+				//this.canLowerGate = true;
+				
 			}
 		}
 

@@ -12,7 +12,7 @@ public class Carpark implements ICarpark {
 	private List<ICarparkObserver> observers;
 	private String carparkId;
 	private int capacity;
-	private int numberOfCarsParked;
+	private int numberOfCarsParked; //will be replaced by counting tickets
 	private IAdhocTicketDAO adhocTicketDAO;
 	private ISeasonTicketDAO seasonTicketDAO;
 	
