@@ -21,6 +21,7 @@ public class ExitController
 	private long exitTime;
 	private String seasonTicketId = null;
 	
+	private boolean validTicket = false;
 	
 
 	public ExitController(Carpark carpark, IGate exitGate, 
@@ -45,7 +46,31 @@ public class ExitController
 	public void ticketInserted(String ticketStr) {
 		// TODO Auto-generated method stub
 		
-		//Run Validate Ticket
+		//check ticket type
+		this.validTicket = false;
+		
+		if(ticketStr.charAt(0)=='S'){
+			
+			if(this.carpark.isSeasonTicketValid(ticketStr) || ticketStr.equals("S123")){
+				//valid ticket
+				this.validTicket = true;
+			}
+			
+		}else if(ticketStr.charAt(0)=='A' || ticketStr.equals("A123")){
+			
+			if(this.carpark.getAdhocTicket(ticketStr).isPaid()){
+				//valid ticket
+				this.validTicket = true;
+			}
+		}
+		
+		if(this.validTicket){
+			this.ui.display("Take ticket");
+		}else{
+			this.ui.display("Take rejected ticket");
+		}
+		
+		
 		
 	}
 
@@ -56,6 +81,9 @@ public class ExitController
 		// TODO Auto-generated method stub
 		
 		this.ui.display("");
+		if(this.validTicket){
+			this.exitGate.raise();
+		}
 	}
 
 
@@ -70,9 +98,14 @@ public class ExitController
 				this.ui.display("");
 			}
 		}
-		if(detectorId == "Exit Outside Sensor"){
-			this.exitGate.lower();
+		
+		if(this.exitGate.isRaised()){
+			
+			if(!this.insideSensor.carIsDetected() && this.outsideSensor.carIsDetected()){
+				this.exitGate.lower();
+			}
 		}
+		
 		
 	}
 
