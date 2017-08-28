@@ -1,5 +1,6 @@
 package bcccp.carpark;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import bcccp.tickets.adhoc.IAdhocTicket;
@@ -12,161 +13,175 @@ public class Carpark implements ICarpark {
 	private List<ICarparkObserver> observers;
 	private String carparkId;
 	private int capacity;
-	private int numberOfCarsParked; //will be replaced by counting tickets
+	private int nParked;
 	private IAdhocTicketDAO adhocTicketDAO;
 	private ISeasonTicketDAO seasonTicketDAO;
 	
-	private String name;
+	
 	
 	public Carpark(String name, int capacity, 
 			IAdhocTicketDAO adhocTicketDAO, 
 			ISeasonTicketDAO seasonTicketDAO) {
-		//TODO Implement constructor
-		this.name = name;
-		
+		this.carparkId = name;
 		this.capacity = capacity;
+		observers = new ArrayList<>();
 		this.adhocTicketDAO = adhocTicketDAO;
 		this.seasonTicketDAO = seasonTicketDAO;
-		
 	}
 
-
-
+	
+	
 	@Override
 	public void register(ICarparkObserver observer) {
-		// TODO Auto-generated method stub
-		if(!observers.contains(observer)){
+		if (!observers.contains(observer)) {
 			observers.add(observer);
 		}
-		
-		
 	}
 
-
-
+	
+	
 	@Override
 	public void deregister(ICarparkObserver observer) {
-		// TODO Auto-generated method stub
-		if(observers.contains(observer)){
+		if (observers.contains(observer)) {
 			observers.remove(observer);
 		}
-		
+	}
+	
+	
+	
+	private void notifyObservers() {
+		for (ICarparkObserver observer : observers) {
+			observer.notifyCarparkEvent();
+		}
 	}
 
-
-
+	
+	
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return this.name;
+		return carparkId;
 	}
-
-
-
+	
+	
+	
 	@Override
 	public boolean isFull() {
-		// TODO Auto-generated method stub
-		if(this.numberOfCarsParked<this.capacity){
-			return false;			
-		}
-		return true;
+		return nParked + seasonTicketDAO.getNumberOfTickets() == capacity;
 	}
-
-
-
+	
+	
+	
 	@Override
 	public IAdhocTicket issueAdhocTicket() {
-		// TODO Auto-generated method stub
-		
-		return this.adhocTicketDAO.createTicket(this.carparkId);
+		return adhocTicketDAO.createTicket(carparkId);
 	}
-
-
-
-	@Override
-	public void recordAdhocTicketEntry() {
-		// TODO Auto-generated method stub
-		this.numberOfCarsParked++;
-		
-	}
-
-
-
+	
+	
 	@Override
 	public IAdhocTicket getAdhocTicket(String barcode) {
-		// TODO Auto-generated method stub
-		return this.adhocTicketDAO.findTicketByBarcode(barcode);
+		return adhocTicketDAO.findTicketByBarcode(barcode);
 	}
-
-
-
+	
+	
+		
 	@Override
 	public float calculateAddHocTicketCharge(long entryDateTime) {
-		// TODO Auto-generated method stub
-		return 0;
+		//TODO Implement charge logic
+		return 3.0f;
 	}
 
-
-
+	
+	
 	@Override
-	public void recordAdhocTicketExit() {
-		// TODO Auto-generated method stub
+	public boolean isSeasonTicketValid(String barcode) {		
+		ISeasonTicket ticket = seasonTicketDAO.findTicketById(barcode);
 		
-		this.numberOfCarsParked--;
-		
+		// TODO implement full validation logic
+		return ticket != null;
 	}
 
-
-
+	
+	
 	@Override
 	public void registerSeasonTicket(ISeasonTicket seasonTicket) {
-		// TODO Auto-generated method stub
-		this.seasonTicketDAO.registerTicket(seasonTicket);
+		seasonTicketDAO.registerTicket(seasonTicket);		
 	}
 
 
 
 	@Override
 	public void deregisterSeasonTicket(ISeasonTicket seasonTicket) {
-		// TODO Auto-generated method stub
-		this.seasonTicketDAO.deregisterTicket(seasonTicket);
+		seasonTicketDAO.deregisterTicket(seasonTicket);		
+	}
+
+	
+	
+	@Override
+	public void recordSeasonTicketEntry(String ticketId) {
+		ISeasonTicket ticket = seasonTicketDAO.findTicketById(ticketId);
+		if (ticket == null) throw new RuntimeException("recordSeasonTicketEntry: invalid ticketId - " + ticketId);
+		
+		seasonTicketDAO.recordTicketEntry(ticketId);
+		log(ticket.toString());
+	}
+
+	
+	
+	private void log(String message) {
+		System.out.println("Carpark : " + message);
+	}
+
+
+
+	@Override
+	public void recordAdhocTicketEntry() {
+		nParked++;
 		
 	}
 
 
 
 	@Override
-	public boolean isSeasonTicketValid(String ticketId) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-
-
-	@Override
-	public boolean isSeasonTicketInUse(String ticketId) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-
-
-	@Override
-	public void recordSeasonTicketEntry(String ticketId) {
-		// TODO Auto-generated method stub
-		this.seasonTicketDAO.recordTicketEntry(ticketId);
+	public void recordAdhocTicketExit() {
+		nParked--;
+		notifyObservers();		
 	}
 
 
 
 	@Override
 	public void recordSeasonTicketExit(String ticketId) {
-		// TODO Auto-generated method stub
-		this.seasonTicketDAO.recordTicketExit(ticketId);
+		ISeasonTicket ticket = seasonTicketDAO.findTicketById(ticketId);
+		if (ticket == null) throw new RuntimeException("recordSeasonTicketExit: invalid ticketId - " + ticketId);
 		
+		seasonTicketDAO.recordTicketExit(ticketId);
+		log(ticket.toString());
 	}
 
-	
-	
+
+
+	@Override
+	public boolean isSeasonTicketInUse(String ticketId) {
+		ISeasonTicket ticket = seasonTicketDAO.findTicketById(ticketId);
+		if (ticket == null) throw new RuntimeException("recordSeasonTicketExit: invalid ticketId - " + ticketId);
+		
+		return ticket.inUse();
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
