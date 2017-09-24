@@ -35,8 +35,8 @@ public class TestSeasonTicketDAO {
 	public static void setUpBeforeClass() throws Exception {
 		sticketId = "S1111";
 		carparkId = "Bathurst Chase";
-		startTime = 1L;
-		endTime = 10L;
+		startTime = System.currentTimeMillis()-1000L;
+		endTime = startTime*2;
 		
 	}
 

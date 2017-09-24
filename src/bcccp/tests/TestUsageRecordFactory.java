@@ -47,13 +47,13 @@ public class TestUsageRecordFactory {
 	
 	@Test(expected=RuntimeException.class)
 	public void testMakeNullTicketId(){
-		sut.make(null, 1L);
+		sut.make(null, System.currentTimeMillis());
 		fail("Expected exception.");
 	}
 	
 	@Test(expected=RuntimeException.class)
 	public void testMakeEmptyTicketId(){
-		sut.make("", 1L);
+		sut.make("", System.currentTimeMillis());
 		fail("Expected exception.");
 	}
 	

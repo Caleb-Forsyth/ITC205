@@ -22,8 +22,8 @@ public class TestUsageRecord {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		startTime = 1L;
-		endTime = 5L;
+		startTime = System.currentTimeMillis()-1000L;
+		endTime = 2*startTime;
 		sticketId = "S1234";
 	}
 
@@ -52,7 +52,7 @@ public class TestUsageRecord {
 	
 	@Test(expected=RuntimeException.class)
 	public void testConstructorNullTicketId(){
-		new UsageRecord(null, 1L);
+		new UsageRecord(null, startTime);
 		fail("Expected exception.");
 	}
 	

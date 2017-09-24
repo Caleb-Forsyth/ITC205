@@ -37,11 +37,11 @@ public class TestSeasonTicket {
 	public static void setUpBeforeClass() throws Exception {
 		sticketId = "S1111";
 		carparkId = "Bathurst Chase";
-		startTime = 1L;
-		endTime = 10L;
+		startTime = System.currentTimeMillis()-1000;
+		endTime = startTime*2;
 		
-		startUsage = 1L;
-		endUsage= 5L;
+		startUsage = startTime+2000;
+		endUsage= startUsage+50000;
 	}
 
 	@AfterClass
@@ -144,7 +144,7 @@ public class TestSeasonTicket {
 	
 	@Test(expected=RuntimeException.class) 
 	public void testEndUsageWithSeasonTicketNotInUse(){
-		sut.endUsage(2L);
+		sut.endUsage(endUsage);
 		fail("Should've thrown exception");
 	}
 	
