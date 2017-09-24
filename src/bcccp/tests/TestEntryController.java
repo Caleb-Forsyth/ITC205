@@ -73,7 +73,7 @@ public class TestEntryController {
 		assertTrue(sut instanceof IEntryController);
 		
 		sut = new EntryController(carpark, egate, eos, eis, eui);
-		verify(carpark).register(any(ICarparkObserver.class));
+		verify(carpark).register(any(ICarparkObserver.class)); //Constructor doesn't set it's instance as an observer of carpark
 		verify(eos).registerResponder(any(ICarSensorResponder.class));
 		verify(eis).registerResponder(any(ICarSensorResponder.class));
 		verify(eui).display("Idle");
@@ -83,18 +83,33 @@ public class TestEntryController {
 	
 	@Test
 	public void testNotifyCarparkEvent(){
-		
-		verify(sut,times(0)).notifyCarparkEvent();		
+		//test notifyCarpark is called when carpark gets event
+		verify(sut,times(0)).notifyCarparkEvent();	
 		ICarpark tempCarpark = new Carpark("Name",3,adhocTicketDAO,seasonTicketDAO);
 		tempCarpark.register(sut);
+		tempCarpark.recordAdhocTicketEntry();
+
 		tempCarpark.recordAdhocTicketExit();
-		verify(sut).notifyCarparkEvent();
+		verify(sut).notifyCarparkEvent(); //Called each ticketExit
+
 		
-		
-		verify(eui,times(0)).display("Push Button");
+		//test if spaces available display ‘Push Button’ message
 		sut = new EntryController(carpark, egate, eos, eis, eui);
+		
+		//car arrives, go to waiting state
+		when(eos.carIsDetected()).thenReturn(true);
+		when(eos.getId()).thenReturn("eosID");
+		sut.carEventDetected("eosID", true);
+		
+		when(carpark.isFull()).thenReturn(true);
+		sut.buttonPushed();//carpark full, so goes from waiting -> full
+		when(carpark.isFull()).thenReturn(false);
+		
+		
+		verify(eui,times(1)).display("Push Button");
 		sut.notifyCarparkEvent();
-		verify(eui).display("Push Button");
+		verify(eui,times(2)).display("Push Button");
+
 	}
 	
 	@Test
@@ -234,18 +249,19 @@ public class TestEntryController {
 		verify(eui,times(2)).display("Idle");
 		
 		
-		//car reversed to inside sensor, go from idle to blocked
-		//System.out.println("Test: CAR REVERSING");
+		//car reversed to inside sensor, idle->blocked
 		when(eis.carIsDetected()).thenReturn(true);
 		verify(eui,times(0)).display("Blocked");
 		sut.carEventDetected("eisID", true);
 		verify(eui,times(1)).display("Blocked");
 		
-		//blocked to Idle since outside sensor detects absence
-		//Doesn't match with specifications
+		//blocked->Idle, since outside sensor detects absence
+		
 		verify(eui,times(2)).display("Idle");
 		when(eos.carIsDetected()).thenReturn(false);
-		sut.carEventDetected("eosID", false);
+		sut.carEventDetected("eosID", false);//Doesn't match with specifications
+		//carEventDetected in EntryController requires the switch case for Blocked to have
+		//an else if statement for outside detector
 		verify(eui,times(3)).display("Idle");
 		
 	}
