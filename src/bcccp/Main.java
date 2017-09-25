@@ -44,8 +44,9 @@ public class Main {
 					
 					Carpark carpark = new Carpark("Bathurst Chase", 5, adhocTicketDAO, seasonTicketDAO);
 					
-					ISeasonTicket t1 = new SeasonTicket("S1111","Bathurst Chase", 0L, 0L);
-					ISeasonTicket t2 = new SeasonTicket("S2222","Bathurst Chase", 0L, 0L);
+					long curTime = System.currentTimeMillis();
+					ISeasonTicket t1 = new SeasonTicket("S1111","Bathurst Chase", curTime-1000, 2*curTime);
+					ISeasonTicket t2 = new SeasonTicket("S2222","Bathurst Chase", 1L, 2L);//out of hours ticket
 					
 					carpark.registerSeasonTicket(t1);
 					carpark.registerSeasonTicket(t2);
