@@ -12,6 +12,7 @@ import bcccp.carpark.exit.ExitUI;
 import bcccp.carpark.paystation.PaystationController;
 import bcccp.carpark.paystation.PaystationUI;
 import bcccp.tickets.adhoc.AdhocTicketFactory;
+import bcccp.tickets.adhoc.IAdhocTicket;
 import bcccp.tickets.adhoc.AdhocTicketDAO;
 import bcccp.tickets.adhoc.IAdhocTicketDAO;
 import bcccp.tickets.season.ISeasonTicket;
@@ -41,13 +42,22 @@ public class Main {
 					IAdhocTicketDAO adhocTicketDAO = new AdhocTicketDAO(new AdhocTicketFactory());
 					ISeasonTicketDAO seasonTicketDAO = new SeasonTicketDAO(new UsageRecordFactory());
 					
-					Carpark carpark = new Carpark("Bathurst Chase", 3, adhocTicketDAO, seasonTicketDAO);
+					Carpark carpark = new Carpark("Bathurst Chase", 5, adhocTicketDAO, seasonTicketDAO);
 					
-					ISeasonTicket t1 = new SeasonTicket("S1111","Bathurst Chase", 0L, 0L);
-					ISeasonTicket t2 = new SeasonTicket("S2222","Bathurst Chase", 0L, 0L);
+					long curTime = System.currentTimeMillis();
+					ISeasonTicket t1 = new SeasonTicket("S1111","Bathurst Chase", curTime-1000, 2*curTime);
+					ISeasonTicket t2 = new SeasonTicket("S2222","Bathurst Chase", 1L, 2L);//out of hours ticket
 					
 					carpark.registerSeasonTicket(t1);
 					carpark.registerSeasonTicket(t2);
+					
+					//issue a ticket so that paystation can be tested
+					/*carpark.issueAdhocTicket();
+					carpark.recordAdhocTicketEntry();
+					carpark.recordSeasonTicketEntry(t1.getId());
+					
+					IAdhocTicket ticket = carpark.issueAdhocTicket();
+					ticket.pay(System.currentTimeMillis(), 5.0f);*/
 					
 					@SuppressWarnings("unused")
 					EntryController entryController = 
