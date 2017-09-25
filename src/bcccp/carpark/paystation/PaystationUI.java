@@ -189,7 +189,7 @@ public class PaystationUI extends JFrame implements IPaystationUI {
 	
 	
 	private void log(String message) {
-		System.out.println("EntryUI : " + message);
+		System.out.println("PayCui : " + message);
 	}
 
 	
